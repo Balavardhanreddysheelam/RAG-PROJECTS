@@ -43,23 +43,23 @@ def initialize_rag_system():
         os.makedirs("./documents", exist_ok=True)
         os.makedirs("./chroma_db", exist_ok=True)
         
-        with st.spinner("🚀 Initializing RAG system..."):
+        with st.spinner(" Initializing RAG system..."):
             if 'rag_pipeline' not in st.session_state or st.session_state.rag_pipeline is None:
                 st.session_state.rag_pipeline = RAGPipeline(
                     documents_path=os.path.abspath("./documents"),
                     persist_directory=os.path.abspath("./chroma_db")
                 )
             st.session_state.system_ready = True
-            st.success("✅ RAG system initialized successfully!")
+            st.success(" RAG system initialized successfully!")
             return True
     except Exception as e:
-        st.error(f"❌ Failed to initialize RAG system: {str(e)}")
+        st.error(f" Failed to initialize RAG system: {str(e)}")
         st.session_state.system_ready = False
         return False
 
 def display_header():
     """Display the main header"""
-    st.title("🤖 RAG Q&A System")
+    st.title(" RAG Q&A System")
     st.markdown("""
     ### Intelligent Document Query System
     Ask questions about your technical documents using natural language.
@@ -68,16 +68,16 @@ def display_header():
 
 def display_sidebar():
     """Display the sidebar with system information and controls"""
-    st.sidebar.title("📊 System Status")
+    st.sidebar.title(" System Status")
     
     # System status
     if st.session_state.system_ready:
-        st.sidebar.success("🟢 System Ready")
+        st.sidebar.success(" System Ready")
     else:
-        st.sidebar.warning("🟡 System Not Ready")
+        st.sidebar.warning(" System Not Ready")
     
     # Initialize button
-    if st.sidebar.button("🔄 Initialize/Restart System"):
+    if st.sidebar.button(" Initialize/Restart System"):
         st.session_state.system_ready = False
         st.session_state.rag_pipeline = None
         initialize_rag_system()
@@ -86,7 +86,7 @@ def display_sidebar():
     
     # System information
     if st.session_state.rag_pipeline:
-        st.sidebar.subheader("📋 System Info")
+        st.sidebar.subheader(" System Info")
         try:
             system_info = st.session_state.rag_pipeline.get_system_info()
             
@@ -100,18 +100,18 @@ def display_sidebar():
     st.sidebar.markdown("---")
     
     # Document management
-    st.sidebar.subheader("📁 Document Management")
+    st.sidebar.subheader(" Document Management")
     
-    if st.sidebar.button("📂 Check Documents"):
+    if st.sidebar.button(" Check Documents"):
         check_documents()
     
-    if st.sidebar.button("🔄 Rebuild Vector Store"):
+    if st.sidebar.button(" Rebuild Vector Store"):
         rebuild_vector_store()
     
     st.sidebar.markdown("---")
     
     # Sample questions
-    st.sidebar.subheader("💡 Sample Questions")
+    st.sidebar.subheader(" Sample Questions")
     sample_questions = [
         "What are the common error codes?",
         "How do I configure the database?",
@@ -121,7 +121,7 @@ def display_sidebar():
     ]
     
     for question in sample_questions:
-        if st.sidebar.button(f"❓ {question}", key=f"sample_{hash(question)}"):
+        if st.sidebar.button(f" {question}", key=f"sample_{hash(question)}"):
             st.session_state.current_question = question
 
 def check_documents():
@@ -131,20 +131,20 @@ def check_documents():
         if os.path.exists(documents_path):
             files = [f for f in os.listdir(documents_path) if f.lower().endswith(('.pdf', '.txt'))]
             if files:
-                st.sidebar.success(f"📚 Found {len(files)} documents:")
+                st.sidebar.success(f" Found {len(files)} documents:")
                 for file in files:
                     st.sidebar.write(f"• {file}")
             else:
-                st.sidebar.warning("📭 No documents found in ./documents/")
+                st.sidebar.warning("No documents found in ./documents/")
         else:
-            st.sidebar.error("📂 Documents folder not found!")
+            st.sidebar.error(" Documents folder not found!")
     except Exception as e:
         st.sidebar.error(f"Error checking documents: {e}")
 
 def rebuild_vector_store():
     """Rebuild the vector store"""
     try:
-        with st.spinner("🔄 Rebuilding vector store..."):
+        with st.spinner(" Rebuilding vector store..."):
             # Delete existing vector store
             if os.path.exists("./chroma_db"):
                 import shutil
@@ -155,13 +155,13 @@ def rebuild_vector_store():
             st.session_state.rag_pipeline = None
             initialize_rag_system()
             
-        st.success("✅ Vector store rebuilt successfully!")
+        st.success(" Vector store rebuilt successfully!")
     except Exception as e:
-        st.error(f"❌ Error rebuilding vector store: {e}")
+        st.error(f" Error rebuilding vector store: {e}")
 
 def display_chat_interface():
     """Display the main chat interface"""
-    st.subheader("💬 Ask Your Questions")
+    st.subheader(" Ask Your Questions")
     
     # Question input
     question = st.text_input(
@@ -178,10 +178,10 @@ def display_chat_interface():
     col1, col2, col3 = st.columns([1, 1, 4])
     
     with col1:
-        ask_button = st.button("🔍 Ask Question", type="primary")
+        ask_button = st.button(" Ask Question", type="primary")
     
     with col2:
-        clear_button = st.button("🗑️ Clear History")
+        clear_button = st.button(" Clear History")
     
     if clear_button:
         st.session_state.chat_history = []
@@ -190,18 +190,18 @@ def display_chat_interface():
     # Process question
     if ask_button and question.strip():
         if not st.session_state.system_ready:
-            st.error("❌ Please initialize the system first using the sidebar.")
+            st.error(" Please initialize the system first using the sidebar.")
             return
         
         if not st.session_state.rag_pipeline:
-            st.error("❌ RAG pipeline not available.")
+            st.error(" RAG pipeline not available.")
             return
         
         # Add question to history
         st.session_state.chat_history.append({"type": "question", "content": question, "timestamp": time.time()})
         
         # Get answer
-        with st.spinner("🤔 Thinking... Searching through documents..."):
+        with st.spinner(" Thinking... Searching through documents..."):
             try:
                 result = st.session_state.rag_pipeline.query(question)
                 
@@ -213,7 +213,7 @@ def display_chat_interface():
                 })
                 
             except Exception as e:
-                st.error(f"❌ Error processing question: {str(e)}")
+                st.error(f" Error processing question: {str(e)}")
         
         # Clear the input
         st.rerun()
@@ -221,21 +221,21 @@ def display_chat_interface():
 def display_chat_history():
     """Display the chat history"""
     if not st.session_state.chat_history:
-        st.info("👋 Welcome! Ask your first question to get started.")
+        st.info(" Welcome! Ask your first question to get started.")
         return
     
-    st.subheader("📜 Conversation History")
+    st.subheader(" Conversation History")
     
     # Display chat history in reverse order (newest first)
     for i, entry in enumerate(reversed(st.session_state.chat_history)):
         if entry["type"] == "question":
-            st.markdown(f"**🙋 You asked:** {entry['content']}")
+            st.markdown(f"** You asked:** {entry['content']}")
         
         elif entry["type"] == "answer":
             result = entry["content"]
             
             # Display answer
-            st.markdown(f"**🤖 Answer:**")
+            st.markdown(f"** Answer:**")
             st.markdown(result["answer"])
             
             # Display confidence and sources
@@ -244,19 +244,19 @@ def display_chat_history():
             with col1:
                 confidence = result.get("confidence", 0.0)
                 if confidence > 0.7:
-                    st.success(f"🎯 Confidence: {confidence:.1%}")
+                    st.success(f" Confidence: {confidence:.1%}")
                 elif confidence > 0.4:
-                    st.warning(f"⚠️ Confidence: {confidence:.1%}")
+                    st.warning(f" Confidence: {confidence:.1%}")
                 else:
-                    st.error(f"❌ Low Confidence: {confidence:.1%}")
+                    st.error(f" Low Confidence: {confidence:.1%}")
             
             with col2:
-                st.info(f"📚 {len(result.get('sources', []))} sources found")
+                st.info(f" {len(result.get('sources', []))} sources found")
             
             # Display sources
             sources = result.get("sources", [])
             if sources:
-                with st.expander(f"📖 View Sources ({len(sources)} documents)"):
+                with st.expander(f" View Sources ({len(sources)} documents)"):
                     for j, source in enumerate(sources):
                         st.markdown(f"**Source {j+1}: {source.get('source', 'Unknown')}**")
                         st.markdown(f"Relevance: {source.get('confidence', 0):.1%}")
@@ -272,10 +272,10 @@ def main():
         
         # Check if system needs initialization
         if not st.session_state.get("system_ready", False):
-            st.warning("🔄 System needs to be initialized. Click 'Initialize/Restart System' in the sidebar.")
+            st.warning(" System needs to be initialized. Click 'Initialize/Restart System' in the sidebar.")
             
             # Auto-initialize on first run
-            if st.button("🚀 Auto-Initialize System"):
+            if st.button(" Auto-Initialize System"):
                 initialize_rag_system()
         
         # Create layout
