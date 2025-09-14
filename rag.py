@@ -42,7 +42,7 @@ class RAGPipeline:
     
     def _setup_pipeline(self):
         """Initialize the complete RAG pipeline"""
-        print("🚀 Setting up RAG pipeline...")
+        print(" Setting up RAG pipeline...")
         
         # Step 1: Setup vector store
         if not self._setup_vector_store():
@@ -55,7 +55,7 @@ class RAGPipeline:
         # Step 3: Create QA chain
         self._create_qa_chain()
         
-        print("✅ RAG pipeline setup complete!")
+        print(" RAG pipeline setup complete!")
         return True
     
     def _setup_vector_store(self) -> bool:
@@ -63,15 +63,15 @@ class RAGPipeline:
         try:
             # Try to load existing vector store first
             if self.vector_manager.load_existing_vector_store():
-                print("📚 Using existing vector store")
+                print(" Using existing vector store")
                 return True
             
             # If no existing store, process documents and create new one
-            print("📁 Processing documents...")
+            print(" Processing documents...")
             documents = self.document_processor.process_directory(self.documents_path)
             
             if not documents:
-                print("❌ No documents found to process!")
+                print(" No documents found to process!")
                 return False
             
             # Create vector store
@@ -79,14 +79,14 @@ class RAGPipeline:
             return success
             
         except Exception as e:
-            print(f"❌ Failed to setup vector store: {e}")
+            print(f" Failed to setup vector store: {e}")
             return False
     
     def _initialize_llm(self) -> bool:
         """Initialize the language model"""
         try:
-            print("🤖 Initializing language model...")
-            print("⏳ This may take a few minutes on first run...")
+            print(" Initializing language model...")
+            print(" This may take a few minutes on first run...")
             
             # Use a smaller, faster model for better performance
             model_name = "microsoft/DialoGPT-small"  # Smaller model for faster inference
@@ -105,12 +105,12 @@ class RAGPipeline:
             # Create HuggingFace LLM
             self.llm = HuggingFacePipeline(pipeline=text_pipeline)
             
-            print("✅ Language model initialized successfully!")
+            print(" Language model initialized successfully!")
             return True
             
         except Exception as e:
-            print(f"❌ Failed to initialize LLM: {e}")
-            print("🔄 Falling back to simple text generation...")
+            print(f" Failed to initialize LLM: {e}")
+            print(" Falling back to simple text generation...")
             
             # Fallback to a simple response generator
             self.llm = self._create_fallback_llm()
@@ -163,11 +163,11 @@ class RAGPipeline:
                 return_source_documents=True
             )
             
-            print("✅ QA chain created successfully!")
+            print(" QA chain created successfully!")
             
         except Exception as e:
-            print(f"⚠️ Failed to create advanced QA chain: {e}")
-            print("🔄 Using simple retrieval system...")
+            print(f" Failed to create advanced QA chain: {e}")
+            print(" Using simple retrieval system...")
             self.qa_chain = None
     
     def query(self, question: str) -> Dict[str, Any]:
@@ -177,7 +177,7 @@ class RAGPipeline:
         try:
             if not self.vector_manager.vector_store:
                 return {
-                    "answer": "❌ Vector store not available. Please check if documents are processed correctly.",
+                    "answer": " Vector store not available. Please check if documents are processed correctly.",
                     "sources": [],
                     "confidence": 0.0
                 }
@@ -187,7 +187,7 @@ class RAGPipeline:
             
             if not relevant_docs:
                 return {
-                    "answer": "❌ No relevant information found in the documents.",
+                    "answer": " No relevant information found in the documents.",
                     "sources": [],
                     "confidence": 0.0
                 }
@@ -216,7 +216,7 @@ class RAGPipeline:
         except Exception as e:
             logger.error(f"Query processing failed: {e}")
             return {
-                "answer": f"❌ Error processing query: {str(e)}",
+                "answer": f" Error processing query: {str(e)}",
                 "sources": [],
                 "confidence": 0.0
             }
@@ -277,7 +277,7 @@ class RAGPipeline:
 
 # Test the RAG pipeline
 if __name__ == "__main__":
-    print("🧪 Testing RAG Pipeline...")
+    print(" Testing RAG Pipeline...")
     
     # Initialize RAG pipeline
     rag = RAGPipeline()
@@ -290,14 +290,14 @@ if __name__ == "__main__":
              "What are the key components of the pipeline implementation?"
 ]
     
-    print("\n🔍 Testing queries...")
+    print("\n Testing queries...")
     for question in test_questions:
-        print(f"\n❓ Question: {question}")
+        print(f"\n Question: {question}")
         result = rag.query(question)
-        print(f"💡 Answer: {result['answer'][:200]}...")
-        print(f"📊 Confidence: {result['confidence']}")
-        print(f"📚 Sources: {len(result['sources'])} documents found")
+        print(f" Answer: {result['answer'][:200]}...")
+        print(f" Confidence: {result['confidence']}")
+        print(f" Sources: {len(result['sources'])} documents found")
     
     # System info
     info = rag.get_system_info()
-    print(f"\n📊 System Info: {info}")
+    print(f"\nSystem Info: {info}")
