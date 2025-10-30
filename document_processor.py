@@ -42,7 +42,7 @@ class DocumentProcessor:
             print(f" pdfplumber failed for {pdf_path}: {e}")
         
         try:
-            # Fallback to PyPDF2
+            # Fallback to PythonPDF
             with open(pdf_path, 'rb') as file:
                 pdf_reader = PyPDF2.PdfReader(file)
                 text = ""
